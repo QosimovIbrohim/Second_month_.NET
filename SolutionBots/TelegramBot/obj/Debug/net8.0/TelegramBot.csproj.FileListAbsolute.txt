@@ -16,3 +16,4 @@ C:\Users\user\Desktop\vs\Second_month_.NET\SolutionBots\TelegramBot\obj\Debug\ne
 C:\Users\user\Desktop\vs\Second_month_.NET\SolutionBots\TelegramBot\obj\Debug\net8.0\TelegramBot.pdb
 C:\Users\user\Desktop\vs\Second_month_.NET\SolutionBots\TelegramBot\obj\Debug\net8.0\TelegramBot.genruntimeconfig.cache
 C:\Users\user\Desktop\vs\Second_month_.NET\SolutionBots\TelegramBot\obj\Debug\net8.0\ref\TelegramBot.dll
+C:\Users\user\Desktop\vs\Second_month_.NET\SolutionBots\TelegramBot\obj\Debug\net8.0\TelegramBot.sourcelink.json

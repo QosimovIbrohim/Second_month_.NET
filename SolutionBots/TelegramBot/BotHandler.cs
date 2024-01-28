@@ -4,6 +4,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.ReplyMarkups;
+using System.Text;
 
 namespace TelegramBot
 {
@@ -12,11 +13,12 @@ namespace TelegramBot
         public string BotToken { get; set; }
         public bool isContactShare = false;
 
+        public StringBuilder sb = new StringBuilder();
         public BotHandler(string token)
         {
             BotToken = token;
         }
-        
+
         public async Task BotHandle()
         {
             var botClient = new TelegramBotClient(BotToken);
@@ -48,7 +50,7 @@ namespace TelegramBot
             Contact? contact = null;
             if (update.Message is not { } message)
                 return;
-            if(message.Contact != null)
+            if (message.Contact != null)
             {
                 contact = message.Contact;
             }
@@ -68,31 +70,36 @@ namespace TelegramBot
                 {
                     ResizeKeyboard = true
                 };
-               await botClient.SendTextMessageAsync(
-                     chatId: chatId,
-                     text: "Assalomu aleykum, Botimizga xush kelibsiz bu bot orqali siz nimadir qila olishingiz mumkin\nBotdan to'liq foydalanish uchun telefon raqamingizni jo'nating",
-                     replyMarkup: replyKeyboardMarkup,
-                     cancellationToken: cancellationToken);
+                await botClient.SendTextMessageAsync(
+                      chatId: chatId,
+                      text: "Assalomu aleykum, Botimizga xush kelibsiz bu bot orqali siz nimadir qila olishingiz mumkin\nBotdan to'liq foydalanish uchun telefon raqamingizni jo'nating",
+                      replyMarkup: replyKeyboardMarkup,
+                      cancellationToken: cancellationToken);
                 return;
 
             }
-            if(contact != null)
+            if (contact != null)
             {
                 CRUD.Update(chatId, contact.PhoneNumber);
 
                 await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text:"Good job!",
+                    text: "Good job!",
                     replyMarkup: new ReplyKeyboardRemove(),
                     cancellationToken: cancellationToken);
-
+                ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
+                {
+                    new KeyboardButton("Savatni ko'rish🧮"),
+                    new KeyboardButton("Zakaz berish🚚")
+                });
                 await botClient.SendTextMessageAsync(
                    chatId: chatId,
-                   text: "Zakazlaringizni tanlashingiz mumkin!",
+                   text: "C#",
+                   replyMarkup: replyKeyboardMarkup,
                    cancellationToken: cancellationToken);
                 return;
             }
-
+            // note if else orasiga switch case qoymaslik
             else if (CRUD.IsPhoneNumberNull(chatId) == false)
             {
                 await botClient.SendTextMessageAsync(
@@ -101,9 +108,29 @@ namespace TelegramBot
                     cancellationToken: cancellationToken);
                 return;
             }
-            else if (message.Text.Contains("saloms"))
+            switch (message.Text)
             {
-                
+                case "Savatni ko'rish🧮":
+                    await botClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: sb.ToString(),
+                        cancellationToken: cancellationToken);
+                    return;
+                case "Zakaz berish🚚":
+                    ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
+                     {
+                    new KeyboardButton("Salatlar🥗"),
+                    new KeyboardButton("Ichimliklar🍷")
+                     });
+                    await botClient.SendTextMessageAsync(
+                        chatId: chatId,
+                        text: message.Text,
+                        replyMarkup: replyKeyboardMarkup,
+                        cancellationToken: cancellationToken);
+                    return;
+                default:
+                    Console.WriteLine(message.Text);
+                    return;
             }
         }
 
