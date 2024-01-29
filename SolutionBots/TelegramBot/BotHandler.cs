@@ -5,6 +5,7 @@ using Telegram.Bot.Types;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types.ReplyMarkups;
 using System.Text;
+using System.Runtime.CompilerServices;
 
 namespace TelegramBot
 {
@@ -58,8 +59,9 @@ namespace TelegramBot
             CRUD.Create(new User()
             {
                 chatID = chatId,
+                status = 0,
                 phoneNumber = ""
-            });
+            }) ;
 
             if (message.Text == "/start")
             {
@@ -84,22 +86,11 @@ namespace TelegramBot
 
                 await botClient.SendTextMessageAsync(
                     chatId: chatId,
-                    text: "Good job!",
+                    text: "/go - buyrug'ini kiriting",
                     replyMarkup: new ReplyKeyboardRemove(),
                     cancellationToken: cancellationToken);
-                ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
-                {
-                    new KeyboardButton("Savatni ko'rish🧮"),
-                    new KeyboardButton("Zakaz berish🚚")
-                });
-                await botClient.SendTextMessageAsync(
-                   chatId: chatId,
-                   text: "C#",
-                   replyMarkup: replyKeyboardMarkup,
-                   cancellationToken: cancellationToken);
                 return;
             }
-            // note if else orasiga switch case qoymaslik
             else if (CRUD.IsPhoneNumberNull(chatId) == false)
             {
                 await botClient.SendTextMessageAsync(
@@ -108,29 +99,60 @@ namespace TelegramBot
                     cancellationToken: cancellationToken);
                 return;
             }
-            switch (message.Text)
+            else if(message.Text == "🛍Buyurtma berish")
             {
-                case "Savatni ko'rish🧮":
-                    await botClient.SendTextMessageAsync(
-                        chatId: chatId,
-                        text: sb.ToString(),
-                        cancellationToken: cancellationToken);
-                    return;
-                case "Zakaz berish🚚":
+                CRUD.ChangeStatusCode(chatId, 50);
+            }
+            switch (CRUD.GetStatusCode(chatId))
+            {
+                case 0:
                     ReplyKeyboardMarkup replyKeyboardMarkup = new(new[]
-                     {
-                    new KeyboardButton("Salatlar🥗"),
-                    new KeyboardButton("Ichimliklar🍷")
-                     });
+                    {
+                        new[]
+                         {
+                            new KeyboardButton("🛍Buyurtma berish"),
+
+                        },
+                        new[]
+                        {
+                            new KeyboardButton("✍️Fikr bildirish"),
+                            new KeyboardButton("☎️Biz bilan aloqa")
+                        },
+                        new[]
+                         {
+                            new KeyboardButton("ℹ️Ma'lumot"),
+                            new KeyboardButton("⚙️Sozlamalar")
+                        }
+                    }
+                    )
+                    {
+                        ResizeKeyboard = true
+                    };
+                    await botClient.SendTextMessageAsync(
+                        chatId:chatId,
+                        text:"Buyurtma berishingiz mumkin",
+                        replyMarkup: replyKeyboardMarkup,
+                        cancellationToken: cancellationToken);
+                    break;
+                case 50:
+                    ReplyKeyboardMarkup replyKeyboardMarkupOrder = new(
+                        new[]
+                         {
+                            new KeyboardButton("🚖Yetkazib berish"),
+                            new KeyboardButton("🏃Olib ketish"),
+
+                        })
+                    {
+                        ResizeKeyboard = true
+                    };
                     await botClient.SendTextMessageAsync(
                         chatId: chatId,
                         text: message.Text,
-                        replyMarkup: replyKeyboardMarkup,
+                        replyMarkup: replyKeyboardMarkupOrder,
                         cancellationToken: cancellationToken);
-                    return;
+                    break;
                 default:
-                    Console.WriteLine(message.Text);
-                    return;
+                    break;
             }
         }
 
